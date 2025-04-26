@@ -1,23 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import NotesList from "../src/components/noteslist";
+import "./App.css";
 
 function App() {
+  const [notes, setNotes] = useState([]);
+
+  // Load notes from localStorage
+  useEffect(() => {
+    const storedNotes = JSON.parse(localStorage.getItem("notes"));
+    if (storedNotes) {
+      setNotes(storedNotes);
+    }
+  }, []);
+
+  // Save notes to localStorage
+  useEffect(() => {
+    localStorage.setItem("notes", JSON.stringify(notes));
+  }, [notes]);
+
+  const addNote = (text) => {
+    const newNote = {
+      id: Date.now(),
+      text: text,
+    };
+    setNotes([...notes, newNote]);
+  };
+
+  const deleteNote = (id) => {
+    setNotes(notes.filter((note) => note.id !== id));
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h1>Notes</h1>
+      <NotesList notes={notes} addNote={addNote} deleteNote={deleteNote} />
     </div>
   );
 }
